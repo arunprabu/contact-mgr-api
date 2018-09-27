@@ -6,7 +6,10 @@ var Schema = mongoose.Schema;
 //schema  for collection Contact
 var Contact = new Schema(
   {
-    contactId: Number,
+    contactId: {
+      type: Number,
+      unique: true
+    },
     name: String,
     phone: Number,
     email: String,
@@ -14,8 +17,9 @@ var Contact = new Schema(
     createdBy : String,
     createdOn : {type: Date, default: Date.now},
     updatedBy : String,
-    updatedOn : {type: Date, default: Date.now}
-  }
+    updatedOn : {type: Date, default: Date.now},
+  },
+  { strict: false }
 );
 
 Contact.plugin(autoIncrement.plugin, {model: 'Contact', field: 'contactId', startAt: 1});

@@ -1,5 +1,6 @@
 //// 2. Establish handshake with DB (from services)
 var Contact = require('../models/contacts');
+var STATUS_CODES = require('../config/statutsCode');
 
 //create contact
 exports.createContact = function (contactDataToBeSaved, callback ) {
@@ -19,4 +20,58 @@ exports.createContact = function (contactDataToBeSaved, callback ) {
   })  
 }
 
+exports.getContacts = function(callback){
+  //2. construct the query 
+  Contact.find({}, function(err, contactList){
+    if(!err){
+      console.log(`Loaded contacts ${contactList.length}` );
+    }
+    
+    //3. channelise the res to routes
+    callback(err, contactList);
+  });
+}
 
+exports.getContactById = function(_contactId, callback){
+  console.log(_contactId);
+  Contact.findOne({ contactId: parseInt(_contactId) }, function(err, contactObj){
+    if(!err){
+      console.log(`ContactById: ${contactObj.contactId} loaded successfully`);
+    }
+    callback(err, contactObj);
+  });
+}
+
+//put
+exports.updateContactById = function(_contactId, _updatableObj, callback){
+  console.log(_contactId,  _updatableObj);
+  Contact.updateOne({ contactId: parseInt(_contactId)}, _updatableObj, function(err, status) {
+    var _statusMsg = {};
+    if(!err){
+      console.log(status);
+      if(status && status.n === 1 && status.ok == 1){
+        _statusMsg.message = STATUS_CODES.UPDATED_STATUS;
+      }else{
+        _statusMsg.message = STATUS_CODES.NOT_UPDATED_STATUS;
+      }
+    }
+    callback(err, _statusMsg );
+  });
+}
+
+//delete
+exports.deleteContactById = function(_contactId, callback) {
+  console.log(_contactId);
+  Contact.deleteOne({ contactId: parseInt(_contactId) }, function(err, status) {
+    var _statusMsg = {};
+    if(!err){
+      console.log(status);
+      if(status && status.n === 1){
+        _statusMsg.message = STATUS_CODES.DELETED_STATUS;
+      }else{
+        _statusMsg.message = STATUS_CODES.NOT_DELETED_STATUS;
+      }
+    }
+    callback(err, _statusMsg );
+  });
+}

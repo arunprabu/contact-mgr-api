@@ -4,23 +4,19 @@ var router = express.Router();
 
 /* GET contacts listing. */
 router.get('/', function(req, res, next) {
-  //send a req to get the data from db  --- service: db queries 
-          //receive the resp 
-          //send it back to routes
-  //routes will receive the resp and send it back as output 
-  res.send(
-    [{
-      "id": 1,
-      "name": "Perceval",
-      "phone": "374-328-0774",
-      "email": "pbartolomeoni0@omniture.com"
-    }, {
-      "id": 2,
-      "name": "Jess",
-      "phone": "105-148-4832",
-      "email": "jtowey1@wp.com"
-    }]
-  );
+  //1. connect to service 
+  contactService.getContacts(function(err, contactList){
+     //4. send the res to client  
+     if(!err){
+       res.json(contactList);
+     }else{
+       res.json(err);
+     }
+  });
+
+  // connecting to other third party api 
+  
+
 });
 
 //POST contact creation
@@ -42,20 +38,37 @@ router.post('/', function(req, res, next) {
 // GET contactByContactId
 router.get('/:contactId', function(req, res, next) {
   console.log(req.params);
-  //send the contactId to db to get only one specific rec
-  //get resp and send it back 
-  res.send(
-    {
-      "id": 1,
-      "name": "Perceval",
-      "phone": "374-328-0774",
-      "email": "pbartolomeoni0@omniture.com"
+  contactService.getContactById(req.params.contactId, function(err, contactObj){
+    if(!err){
+      res.json(contactObj);
+    }else{
+      res.json(err);
     }
-  );
+  });
+  
 });
 
 //PUT will come
+router.put('/:contactId', function(req, res, next){
+  contactService.updateContactById(req.params.contactId, req.body, function(err, status){
+    if(!err){
+      res.json(status);
+    }else{
+      res.json(err);
+    }
+  })
+});
 
 //DELETE will come 
+router.delete('/:contactId', function(req, res, next) {
+  //1. call the service 
+  contactService.deleteContactById(req.params.contactId, function(err, status){
+    if(!err){
+      res.json(status);
+    }else{
+      res.json(err);
+    }
+  })
+});
 
 module.exports = router;
