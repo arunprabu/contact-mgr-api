@@ -20,6 +20,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public'))); // referring to public folder
 
+//Allow Cross Domain -- Refer : https://enable-cors.org/server_expressjs.html
+//Allow certain http methods: https://stackoverflow.com/questions/42463499/node-allow-cors-for-put
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "http://localhost:4200");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Methods', 'PUT, POST, GET, DELETE, OPTIONS');
+  next();
+});
+
 //api url
 app.use('/', indexRouter);
 app.use('/api/contacts', contactsRouter);
