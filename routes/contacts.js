@@ -1,9 +1,11 @@
 var express = require('express');
 var contactService = require('../services/contactsService');
+var authUtil = require('./util/authUtil');
 var router = express.Router();
 
 /* GET contacts listing. */
-router.get('/', function(req, res, next) {
+
+router.get('/',  authUtil.optional, function(req, res, next) {
   //1. connect to service 
   contactService.getContacts(function(err, contactList){
      //4. send the res to client  
@@ -35,6 +37,16 @@ router.post('/', function(req, res, next) {
   
 });
 
+
+router.get('/test', authUtil.required, function(req, res, next){
+  //try calling third party service from here
+  //
+  
+  res.json({ 
+    message: "When the URL is with /test Success"
+  });
+});
+
 // GET contactByContactId
 router.get('/:contactId', function(req, res, next) {
   console.log(req.params);
@@ -45,7 +57,6 @@ router.get('/:contactId', function(req, res, next) {
       res.json(err);
     }
   });
-  
 });
 
 //PUT will come
